@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        canvas{
+            display: block;
+            width: 900px;
+            height: 600px;
+            margin: 50px auto;
+            background: url(imgs/153_131220131811_4.jpg) 0 0 no-repeat / 900px 600px;
+        }
+    </style>
+</head>
+<body>
+<canvas width="900" height="600" id="cas"></canvas>
+<script>
+    function rdm (m,n){
+        return Math.floor(Math.random()*(n-m))+m;
+    }
+    function toRadian( angle ){
+        return angle/180*Math.PI;
+    }
+    var cas = document.querySelector("#cas");
+    var ctx = cas.getContext('2d');
+    var snows = [];
+    for (var i = 0; i < 100; i++) {
+        snows.push({
+            x:rdm(0,900),
+            y:rdm(0,600),
+            radius:rdm(2,16),
+            deg:rdm(-10,10)
+        });
+    }
+    setInterval(function(){
+        ctx.clearRect(0,0,900,600);
+        ctx.save();
+        for (var i = 0; i < snows.length; i++) {
+            snows[i].fall = snows[i].radius/6;
+            snows[i].x += snows[i].fall * Math.tan(toRadian(snows[i].deg));
+            snows[i].y += snows[i].fall;
+            if(snows[i].x>900 || snows[i].x<0 || snows[i].y>600){
+                snows.splice(i,1,{
+                    x:rdm(0,900),
+                    y:rdm(0,10),
+                    radius:rdm(2,16),
+                    deg:rdm(-10,10)
+                });
+            }
+            var crg = ctx.createRadialGradient(snows[i].x , snows[i].y , snows[i].radius/4 , snows[i].x , snows[i].y , snows[i].radius);
+            crg.addColorStop(0,'rgba(255,255,255,1)');
+            crg.addColorStop(1,'rgba(255,255,255,0.1)');
+            ctx.beginPath();
+            ctx.arc(snows[i].x , snows[i].y , snows[i].radius,0,2*Math.PI);
+            ctx.fillStyle = crg;
+            ctx.fill();
+        }
+        ctx.restore();
+    },20);
+</script>
+</body>
+</html>
